@@ -1,78 +1,181 @@
-import Image from "next/image";
-import { Geist, Geist_Mono } from "next/font/google";
+/**
+ * Admin Dashboard Page
+ * Minimalistic, mobile-responsive design
+ */
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
+import { useEffect, useState } from "react";
+import Link from "next/link";
+import AdminLayout from "@/components/AdminLayout";
+import api from "@/lib/api";
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
+interface Metrics {
+	users: {
+		total: number;
+		employers: number;
+		jobseekers: number;
+		newThisMonth: number;
+	};
+	jobs: {
+		total: number;
+		active: number;
+		newThisMonth: number;
+	};
+	applications: {
+		total: number;
+		pending: number;
+		hired: number;
+	};
+	revenue: {
+		totalInRupees: number;
+		thisMonthInRupees: number;
+	};
+	pending: {
+		kyc: number;
+		employers: number;
+	};
+}
 
-export default function Home() {
-  return (
-    <div
-      className={`${geistSans.className} ${geistMono.className} flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black`}
-    >
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the index.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=default-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=default-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=default-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs/pages/getting-started?utm_source=create-next-app&utm_medium=default-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
-    </div>
-  );
+export default function AdminDashboard() {
+	const [metrics, setMetrics] = useState<Metrics | null>(null);
+	const [loading, setLoading] = useState(true);
+
+	useEffect(() => {
+		loadMetrics();
+	}, []);
+
+	const loadMetrics = async () => {
+		try {
+			const response = await api.get("/admin/dashboard");
+			setMetrics(response.data);
+		} catch (err) {
+			console.error("Failed to load metrics", err);
+		} finally {
+			setLoading(false);
+		}
+	};
+
+	return (
+		<AdminLayout>
+			<div className="max-w-7xl mx-auto">
+				<h1 className="text-xl sm:text-2xl font-bold text-[#0F172A] mb-6">Dashboard</h1>
+
+				{loading ? (
+					<div className="text-center py-12">
+						<div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#2563EB] mx-auto"></div>
+					</div>
+				) : !metrics ? (
+					<div className="bg-white rounded-lg p-6 shadow-sm border border-[#E2E8F0] text-center">
+						<p className="text-red-600">Failed to load dashboard data</p>
+					</div>
+				) : (
+					<>
+						{/* Stats Cards */}
+						<div className="grid gap-4 sm:gap-6 grid-cols-2 lg:grid-cols-4 mb-6 sm:mb-8">
+							<div className="bg-white rounded-lg p-4 sm:p-5 shadow-sm border border-[#E2E8F0]">
+								<p className="text-xs sm:text-sm text-[#64748B]">Total Users</p>
+								<p className="text-2xl sm:text-3xl font-bold text-[#0F172A] mt-1">
+									{metrics.users.total}
+								</p>
+								<p className="text-xs sm:text-sm text-[#16A34A] mt-2">
+									+{metrics.users.newThisMonth} this month
+								</p>
+							</div>
+
+							<div className="bg-white rounded-lg p-4 sm:p-5 shadow-sm border border-[#E2E8F0]">
+								<p className="text-xs sm:text-sm text-[#64748B]">Active Jobs</p>
+								<p className="text-2xl sm:text-3xl font-bold text-[#0F172A] mt-1">
+									{metrics.jobs.active}
+								</p>
+								<p className="text-xs sm:text-sm text-[#64748B] mt-2">
+									{metrics.jobs.total} total
+								</p>
+							</div>
+
+							<div className="bg-white rounded-lg p-4 sm:p-5 shadow-sm border border-[#E2E8F0]">
+								<p className="text-xs sm:text-sm text-[#64748B]">Applications</p>
+								<p className="text-2xl sm:text-3xl font-bold text-[#0F172A] mt-1">
+									{metrics.applications.total}
+								</p>
+								<p className="text-xs sm:text-sm text-[#D97706] mt-2">
+									{metrics.applications.pending} pending
+								</p>
+							</div>
+
+							<div className="bg-white rounded-lg p-4 sm:p-5 shadow-sm border border-[#E2E8F0]">
+								<p className="text-xs sm:text-sm text-[#64748B]">Revenue</p>
+								<p className="text-2xl sm:text-3xl font-bold text-[#0F172A] mt-1">
+									₹{metrics.revenue.totalInRupees.toLocaleString()}
+								</p>
+								<p className="text-xs sm:text-sm text-[#16A34A] mt-2">
+									₹{metrics.revenue.thisMonthInRupees.toLocaleString()} this month
+								</p>
+							</div>
+						</div>
+
+						{/* Pending Items */}
+						<div className="grid gap-4 sm:gap-6 sm:grid-cols-2 mb-6 sm:mb-8">
+							<Link href="/kyc" className="block">
+								<div className="bg-white rounded-lg p-4 sm:p-5 shadow-sm border border-[#E2E8F0] hover:border-[#2563EB] transition">
+									<div className="flex justify-between items-center">
+										<div>
+											<p className="text-sm text-[#64748B]">Pending KYC Reviews</p>
+											<p className="text-xl sm:text-2xl font-bold text-[#0F172A] mt-1">
+												{metrics.pending.kyc}
+											</p>
+										</div>
+										<span className="text-3xl sm:text-4xl">📋</span>
+									</div>
+								</div>
+							</Link>
+
+							<Link href="/employers" className="block">
+								<div className="bg-white rounded-lg p-4 sm:p-5 shadow-sm border border-[#E2E8F0] hover:border-[#2563EB] transition">
+									<div className="flex justify-between items-center">
+										<div>
+											<p className="text-sm text-[#64748B]">Pending Employer Verifications</p>
+											<p className="text-xl sm:text-2xl font-bold text-[#0F172A] mt-1">
+												{metrics.pending.employers}
+											</p>
+										</div>
+										<span className="text-3xl sm:text-4xl">🏢</span>
+									</div>
+								</div>
+							</Link>
+						</div>
+
+						{/* Quick Links - Desktop only, mobile has bottom nav */}
+						<div className="hidden md:block bg-white rounded-lg p-6 shadow-sm border border-[#E2E8F0]">
+							<h2 className="text-lg font-semibold text-[#0F172A] mb-4">Quick Actions</h2>
+							<div className="grid gap-4 grid-cols-2 lg:grid-cols-4">
+								<Link
+									href="/kyc"
+									className="px-4 py-3 bg-[#F8FAFC] text-[#0F172A] rounded-lg text-center hover:bg-[#F1F5F9] border border-[#E2E8F0] transition"
+								>
+									KYC Queue
+								</Link>
+								<Link
+									href="/employers"
+									className="px-4 py-3 bg-[#F8FAFC] text-[#0F172A] rounded-lg text-center hover:bg-[#F1F5F9] border border-[#E2E8F0] transition"
+								>
+									Employers
+								</Link>
+								<Link
+									href="/jobs"
+									className="px-4 py-3 bg-[#F8FAFC] text-[#0F172A] rounded-lg text-center hover:bg-[#F1F5F9] border border-[#E2E8F0] transition"
+								>
+									Jobs
+								</Link>
+								<Link
+									href="/audit-logs"
+									className="px-4 py-3 bg-[#F8FAFC] text-[#0F172A] rounded-lg text-center hover:bg-[#F1F5F9] border border-[#E2E8F0] transition"
+								>
+									Audit Logs
+								</Link>
+							</div>
+						</div>
+					</>
+				)}
+			</div>
+		</AdminLayout>
+	);
 }
