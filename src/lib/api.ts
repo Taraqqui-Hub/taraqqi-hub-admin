@@ -38,9 +38,21 @@ api.interceptors.request.use(
 	}
 );
 
-// Response interceptor - handle token refresh
+// Response interceptor - unwrap API payload and handle token refresh
 api.interceptors.response.use(
-	(response) => response,
+	(response) => {
+		// Unwrap { status, message, payload } so components use response.data directly
+		if (
+			response.config.responseType !== "blob" &&
+			response.data &&
+			typeof response.data === "object" &&
+			"payload" in response.data &&
+			response.data.payload !== undefined
+		) {
+			response.data = response.data.payload;
+		}
+		return response;
+	},
 	async (error: AxiosError) => {
 		const originalRequest = error.config as InternalAxiosRequestConfig & {
 			_retry?: boolean;
@@ -52,7 +64,8 @@ api.interceptors.response.use(
 
 			try {
 				const response = await api.post("/auth/refresh");
-				const newToken = response.data.payload?.accessToken;
+				const payload = response.data?.payload ?? response.data;
+				const newToken = payload?.accessToken;
 
 				if (newToken) {
 					setAccessToken(newToken);
@@ -104,14 +117,15 @@ export const authApi = {
 	// Email/password login
 	login: async (params: LoginParams): Promise<{ payload: AuthResponse }> => {
 		const response = await api.post("/auth/login", params);
-		const token = response.data.payload?.accessToken;
+		const data = response.data?.payload ?? response.data;
+		const token = data?.accessToken;
 		if (token) {
 			setAccessToken(token);
 		}
-		return response.data;
+		return { payload: data };
 	},
 
-	// Get current user
+	// Get current user (response interceptor unwraps to { user, roles, permissions, ... })
 	getMe: async () => {
 		const response = await api.get("/auth/me");
 		return response.data;
@@ -124,10 +138,11 @@ export const authApi = {
 		return response.data;
 	},
 
-	// Refresh token
+	// Refresh token (response.data is unwrapped payload)
 	refresh: async () => {
 		const response = await api.post("/auth/refresh");
-		const newToken = response.data.payload?.accessToken;
+		const data = response.data?.payload ?? response.data;
+		const newToken = data?.accessToken;
 		if (newToken) {
 			setAccessToken(newToken);
 		}

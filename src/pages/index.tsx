@@ -69,8 +69,8 @@ export default function AdminDashboard() {
 					</div>
 				) : (
 					<>
-						{/* Stats Cards */}
-						<div className="grid gap-4 sm:gap-6 grid-cols-2 lg:grid-cols-4 mb-6 sm:mb-8">
+						{/* Primary KPIs */}
+						<div className="grid gap-4 sm:gap-6 grid-cols-2 lg:grid-cols-4 mb-4">
 							<div className="bg-white rounded-lg p-4 sm:p-5 shadow-sm border border-[#E2E8F0]">
 								<p className="text-xs sm:text-sm text-[#64748B]">Total Users</p>
 								<p className="text-2xl sm:text-3xl font-bold text-[#0F172A] mt-1">
@@ -80,7 +80,20 @@ export default function AdminDashboard() {
 									+{metrics.users.newThisMonth} this month
 								</p>
 							</div>
-
+							<div className="bg-white rounded-lg p-4 sm:p-5 shadow-sm border border-[#E2E8F0]">
+								<p className="text-xs sm:text-sm text-[#64748B]">Individuals</p>
+								<p className="text-2xl sm:text-3xl font-bold text-[#0F172A] mt-1">
+									{metrics.users.jobseekers}
+								</p>
+								<p className="text-xs sm:text-sm text-[#64748B] mt-2">Job seekers</p>
+							</div>
+							<div className="bg-white rounded-lg p-4 sm:p-5 shadow-sm border border-[#E2E8F0]">
+								<p className="text-xs sm:text-sm text-[#64748B]">Total Employers</p>
+								<p className="text-2xl sm:text-3xl font-bold text-[#0F172A] mt-1">
+									{metrics.users.employers}
+								</p>
+								<p className="text-xs sm:text-sm text-[#64748B] mt-2">Companies</p>
+							</div>
 							<div className="bg-white rounded-lg p-4 sm:p-5 shadow-sm border border-[#E2E8F0]">
 								<p className="text-xs sm:text-sm text-[#64748B]">Active Jobs</p>
 								<p className="text-2xl sm:text-3xl font-bold text-[#0F172A] mt-1">
@@ -90,7 +103,8 @@ export default function AdminDashboard() {
 									{metrics.jobs.total} total
 								</p>
 							</div>
-
+						</div>
+						<div className="grid gap-4 sm:gap-6 grid-cols-2 lg:grid-cols-4 mb-6 sm:mb-8">
 							<div className="bg-white rounded-lg p-4 sm:p-5 shadow-sm border border-[#E2E8F0]">
 								<p className="text-xs sm:text-sm text-[#64748B]">Applications</p>
 								<p className="text-2xl sm:text-3xl font-bold text-[#0F172A] mt-1">
@@ -100,7 +114,6 @@ export default function AdminDashboard() {
 									{metrics.applications.pending} pending
 								</p>
 							</div>
-
 							<div className="bg-white rounded-lg p-4 sm:p-5 shadow-sm border border-[#E2E8F0]">
 								<p className="text-xs sm:text-sm text-[#64748B]">Revenue</p>
 								<p className="text-2xl sm:text-3xl font-bold text-[#0F172A] mt-1">
@@ -152,6 +165,12 @@ export default function AdminDashboard() {
 									className="px-4 py-3 bg-[#F8FAFC] text-[#0F172A] rounded-lg text-center hover:bg-[#F1F5F9] border border-[#E2E8F0] transition"
 								>
 									KYC Queue
+								</Link>
+								<Link
+									href="/users"
+									className="px-4 py-3 bg-[#F8FAFC] text-[#0F172A] rounded-lg text-center hover:bg-[#F1F5F9] border border-[#E2E8F0] transition"
+								>
+									User Management
 								</Link>
 								<Link
 									href="/employers"

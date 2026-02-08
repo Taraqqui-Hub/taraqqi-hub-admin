@@ -94,7 +94,7 @@ export const useAdminAuthStore = create<AdminAuthState>()(
 				try {
 					await authApi.refresh();
 					const response = await authApi.getMe();
-					const user = response.payload?.user;
+					const user = response?.user ?? response?.payload?.user;
 
 					// Verify admin
 					if (user && user.userType === "admin") {
