@@ -94,7 +94,7 @@ export interface AdminUser {
 	name: string | null;
 	phone: string;
 	email: string | null;
-	userType: "admin";
+	userType: "admin" | "super_admin";
 	permissions: string[];
 }
 

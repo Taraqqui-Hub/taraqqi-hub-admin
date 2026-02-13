@@ -9,6 +9,15 @@ import { useEffect } from "react";
 import { useRouter } from "next/router";
 import Link from "next/link";
 import { useAdminAuthStore } from "@/store/authStore";
+import { 
+	LayoutDashboard, 
+	Users, 
+	UserCheck, 
+	Building2, 
+	Briefcase, 
+	FileText, 
+	UserCog 
+} from "lucide-react";
 
 interface AdminLayoutProps {
 	children: React.ReactNode;
@@ -37,7 +46,7 @@ export default function AdminLayout({
 	// Check admin status
 	useEffect(() => {
 		if (!isLoading && isAuthenticated && user) {
-			if (user.userType !== "admin") {
+			if (user.userType !== "admin" && user.userType !== "super_admin") {
 				logout().then(() => {
 					router.replace("/login?error=permission_denied");
 				});
@@ -65,17 +74,22 @@ export default function AdminLayout({
 		);
 	}
 
-	if (!isAuthenticated || !user || user.userType !== "admin") {
+	if (!isAuthenticated || !user || (user.userType !== "admin" && user.userType !== "super_admin")) {
 		return null;
 	}
 
+
 	const navItems = [
-		{ href: "/", label: "Dashboard", icon: "🏠" },
-		{ href: "/users", label: "Users", icon: "👥" },
-		{ href: "/kyc", label: "KYC Queue", icon: "📋" },
-		{ href: "/employers", label: "Employers", icon: "🏢" },
-		{ href: "/jobs", label: "Jobs", icon: "💼" },
-		{ href: "/audit-logs", label: "Audit Logs", icon: "📜" },
+		{ href: "/", label: "Dashboard", icon: LayoutDashboard },
+		{ href: "/users", label: "Users", icon: Users },
+		{ href: "/kyc", label: "KYC Queue", icon: UserCheck },
+		{ href: "/employers", label: "Employers", icon: Building2 },
+		{ href: "/jobs", label: "Jobs", icon: Briefcase },
+		{ href: "/audit-logs", label: "Audit Logs", icon: FileText },
+		// Only show Admin Management for super_admin
+		...(user.userType === "super_admin"
+			? [{ href: "/admin-management", label: "Admin Management", icon: UserCog }]
+			: []),
 	];
 
 	return (
@@ -133,7 +147,7 @@ export default function AdminLayout({
 										: "text-[#475569] hover:bg-[#F8FAFC]"
 								}`}
 							>
-								<span className="mr-3">{item.icon}</span>
+								<item.icon className="w-5 h-5 mr-3" />
 								{item.label}
 							</Link>
 						))}
@@ -153,7 +167,7 @@ export default function AdminLayout({
 										: "text-[#64748B]"
 								}`}
 							>
-								<span className="text-lg mb-0.5">{item.icon}</span>
+								<item.icon className="w-5 h-5 mb-0.5" />
 								<span>{item.label.split(" ")[0]}</span>
 							</Link>
 						))}

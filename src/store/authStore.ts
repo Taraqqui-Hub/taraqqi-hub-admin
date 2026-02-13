@@ -38,8 +38,8 @@ export const useAdminAuthStore = create<AdminAuthState>()(
 					const response = await authApi.login({ email, password });
 					const { accessToken, user } = response.payload;
 
-					// ADMIN ONLY CHECK
-					if (user.userType !== "admin") {
+					// ADMIN or SUPER_ADMIN CHECK
+					if (user.userType !== "admin" && user.userType !== "super_admin") {
 						set({
 							error: "Access denied. Admin account required.",
 							isLoading: false,
@@ -96,8 +96,8 @@ export const useAdminAuthStore = create<AdminAuthState>()(
 					const response = await authApi.getMe();
 					const user = response?.user ?? response?.payload?.user;
 
-					// Verify admin
-					if (user && user.userType === "admin") {
+					// Verify admin or super_admin
+					if (user && (user.userType === "admin" || user.userType === "super_admin")) {
 						set({
 							user,
 							isAuthenticated: true,
