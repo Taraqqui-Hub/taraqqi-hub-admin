@@ -114,7 +114,7 @@ export default function AdminLayout({
 									/>
 								</svg>
 							</div>
-							<span className="text-[#0F172A] font-semibold hidden sm:inline">Taraqqi Admin</span>
+							<span className="text-[#0F172A] font-semibold hidden sm:inline">Equalio Admin</span>
 							<span className="text-[#0F172A] font-semibold sm:hidden">Admin</span>
 						</div>
 

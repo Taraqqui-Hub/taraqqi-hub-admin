@@ -65,7 +65,7 @@ export default function AdminLoginPage() {
 						</svg>
 					</div>
 					<h1 className="text-2xl sm:text-3xl font-bold text-[#0F172A]">Admin Panel</h1>
-					<p className="text-[#475569] mt-1 text-sm sm:text-base">Taraqqi Hub Administration</p>
+					<p className="text-[#475569] mt-1 text-sm sm:text-base">Equalio Administration</p>
 				</div>
 
 				{/* Login Card */}
